@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alkatra:wght@400..700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
+
+
+    <style>
+        
+        
+        body{
+            font-family: "Alkatra", system-ui;
+            font-optical-sizing: auto;
+            font-weight: auto;
+            font-style: normal;
+            background: linear-gradient(45deg, #ff5f6d, #ffc371);
+            display: flex;
+            /* background: url(../static/landing_img1.png); */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding-top: 10vh;
+            /* border: 2px black solid; */
+        }
+        .canvas-container{
+            background: rgba(203, 200, 200, 0);
+            width: 60vw;
+            height: 30vw;
+            margin: 10vh 4vw;
+            
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        .canvas-header{
+            /* border-radius: 7px; */
+            background-color: rgba(255, 255, 255, 0.2); /* Set the background color with opacity */
+            backdrop-filter: blur(10px); /* Apply blur effect to create a frosted glass effect */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            height: 50px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            
+        }
+        .tool-container{
+            background-color: rgba(255, 255, 255, 0.2); /* Set the background color with opacity */
+            backdrop-filter: blur(10px); /* Apply blur effect to create a frosted glass effect */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            height: 100%;
+            display: flex;
+            gap: 1px;
+
+        }
+        .task-bar{
+            background-color: rgba(255, 255, 255, 0.2); /* Set the background color with opacity */
+            backdrop-filter: blur(10px); /* Apply blur effect to create a frosted glass effect */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            min-width: 130px;
+            width: 12vw;
+            height: 100%;
+        }
+
+        .editing-tools > button {
+            background-color: #c2fbd7;
+  border-radius: 100px;
+  box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+  color: green;
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 7px 10px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 70%;
+        }
+
+        .editing-tools > button:active {
+            transform: scale(0.90); /* Example: Scale down the div */
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.56) inset; /* Suitable box shadow */
+
+        }
+
+        .editing-tools > button:hover {
+            transform: scale(1.05) rotate(-1deg);
+            cursor: pointer;
+            color: black;
+            font-weight: bolder;
+            background-color: rgb(72, 255, 0);
+        }
+
+        .preview{
+            background-color: rgba(255, 255, 255, 0.2); /* Set the background color with opacity */
+            backdrop-filter: blur(10px); /* Apply blur effect to create a frosted glass effect */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 23vw;
+        }
+        .work-space{
+            position: relative;
+            /* border: 2px red solid; */
+            background-color: rgba(255, 255, 255, 0.2); /* Set the background color with opacity */
+            backdrop-filter: blur(10px); /* Apply blur effect to create a frosted glass effect */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            /* height: auto; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+        }
+        .box{
+            border-radius: 3px;
+        }
+
+        .blur-preview{
+            display: none;
+        }
+        .crop-preview{
+            display: none;
+        }
+        .rotate-preview{
+            display: none;
+        }
+
+        .filter-preview{
+            display: none;
+        }
+        .extract-preview{
+            display: none;
+        }
+        @media screen and (max-width: 1000px){
+            .canvas-container{
+            background: rgba(203, 200, 200, 0);
+            width: 90vw;
+            height: 47vw;
+            margin: 10vh 4vw;
+            
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        }
+
+        button[type="submit"] {
+            align-items: center;
+            appearance: none;
+            background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+            border: 0;
+            border-radius: 6px;
+            box-shadow: rgba(45, 35, 66, .4) 0 2px 4px,rgba(45, 35, 66, .3) 0 7px 13px -3px,rgba(58, 65, 111, .5) 0 -3px 0 inset;
+            box-sizing: border-box;
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            font-family: "JetBrains Mono",monospace;
+            height: 40px;
+            justify-content: center;
+            line-height: 1;
+            list-style: none;
+            overflow: hidden;
+            padding-left: 10px;
+            padding-right: 10px;
+            position: relative;
+            text-align: left;
+            text-decoration: none;
+            transition: box-shadow .15s,transform .15s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            white-space: nowrap;
+            will-change: box-shadow,transform;
+            font-size: 15px;
+            width: fit-content;
+            
+            }
+
+button[type="submit"]:focus {
+    box-shadow: #3c4fe0 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+}
+
+button[type="submit"]:hover {
+    box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+    box-shadow: #3c4fe0 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+
+
+    </style>
+</head>
+<body>
+    <div style="height: 90;">
+        <div class="canvas-container box">
+            <div class="canvas-header box">
+                <div style="font-size: 1.7em; padding: 6px 15px 6px 15px;"> &#x2715; </div>
+                <div style="height: 70%; border: 0.1px solid rgba(178, 178, 178, 0.748);"></div>
+                <div style="font-weight: 900; font-size: 1.5em; margin-left: 20px;">Edit Your Photo</div>
+                
+            </div>
+            <div class="tool-container box">
+                <div class="task-bar box">
+                    <div>
+                        <div style="font-size: 1.1em; font-weight: 900; margin-left: 5px;">Editing Tools</div>
+                        <div class="editing-tools" style="text-align: center; color: rgb(49, 49, 49); display: flex;flex-direction: column;gap: 2vw;align-items: center;">
+                            <button onclick="cropOption()">Crop</button>
+                            <button onclick="blurOption()">Blur</button> <!-- Changed to applyBlur() -->
+                            <button onclick="rotateOption()">Rotate</button>
+                            <button onclick="filterOption()">Filters</button>
+                            <!-- Add a canvas element -->
+                            <canvas id="canvas" style="display: none;"></canvas>
+                            <button onclick="downloadImage()">Download</button>
+                        </div>
+                    </div>
+                    <div style="border: 0.1px solid rgba(211, 157, 157, 0.458); margin: 0 10px 0 10px ;"></div>
+                </div>
+    
+                <div class="preview box">
+                    
+                    <div class="blur-preview blur-image">
+                        <form action="" method="post">
+                            <label for="blur_radius">Blur Radius:</label>
+                            <input type="range" id="blur_radius" name="blur_radius" min="1" max="20" value="1"><br>
+                            <button type="submit" name="operation" value="blur">Apply Blur</button>
+                        </form>
+                    </div>
+                    
+                    <div class="crop-preview crop-image">
+                        <form id="crop-form" action="" method="post">
+                            <label for="left">Left:</label>
+                            <input type="range" id="left" name="left" min="0" max="100" value="0"><br>
+                            <label for="top">Top:</label>
+                            <input type="range" id="top" name="top" min="0" max="100" value="0"><br>
+                            <label for="width">Width:</label>
+                            <input type="range" id="width" name="width" min="0" max="100" value="100"><br>
+                            <label for="height">Height:</label>
+                            <input type="range" id="height" name="height" min="0" max="100" value="100"><br>
+                            <button type="submit" name="operation" value="crop">Apply Crop</button>
+                        </form>
+                    </div>
+                    
+                    <div class="rotate-preview rotate-image">
+                        <form id="rotate-form" action="" method="post">
+                            <label for="rotate">Rotate:</label>
+                            <input type="range" id="rotate" name="rotate" min="-180" max="180" value="0"><br>
+                            <button type="submit" name="operation" value="rotate">Apply Rotate</button>
+                        </form>
+                    </div>
+    
+                    <form id="extractForm" enctype="multipart/form-data">
+                        <div class="extract-preview extract-image">
+                            <button onclick="extract1()">Extract Text</button>
+                        </div>
+                    </form>
+    
+                    <div class="filter-preview filter-image">
+                        <form id="filter-form" action="" method="post">
+                            <input type="radio" name="filter_option" value="Contour">
+                            <label for="option2">Contour</label><br>
+                            <input type="radio" name="filter_option" value="Edge Enhance">
+                            <label for="option3">Edge Enhance</label><br>
+                            <input type="radio" name="filter_option" value="Grey">
+                            <label for="option4">Grey</label><br>
+                            <input type="radio" name="filter_option" value="Emboss">
+                            <label for="option5">Emboss</label><br>
+                            <input type="radio" name="filter_option" value="Sharpen">
+                            <label for="option6">Sharpen</label><br>
+                            <input type="radio" name="filter_option" value="Smooth">
+                            <label for="option7">Smooth</label><br>
+                            <input type="radio" name="filter_option" value="Find Edges">
+                            <label for="option8">Find Edges</label><br>
+                            <button type="submit" name="operation" value="apply_filter">Apply Filter</button>
+                        </form>
+                    </div>
+                </div>
+    
+                <div class="work-space box">
+                    <div id="image-container" style="position: relative;">
+                        <img width="90%" style="max-width: 90%;max-height: 90%;"  id="uploaded-image" src="data:image/png;base64,{{ encoded_image }}" alt="Uploaded File">
+                        <svg id="overlay" width="100%" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+                            <line id="vertical-left" x1="0" y1="0" x2="0" y2="100%" style="stroke: red; stroke-width: 2;"></line>
+                            <line id="horizontal-top" x1="0" y1="0" x2="100%" y2="0" style="stroke: blue; stroke-width: 2;"></line>
+                            <line id="vertical-right" x1="0" y1="0" x2="0" y2="100%" style="stroke: red; stroke-width: 2;"></line>
+                            <line id="horizontal-bottom" x1="0" y1="0" x2="100%" y2="0" style="stroke: blue; stroke-width: 2;"></line>
+                        </svg>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </div>
+    
+
+    <script>
+        const leftSlider = document.getElementById('left');
+        const topSlider = document.getElementById('top');
+        const widthSlider = document.getElementById('width');
+        const heightSlider = document.getElementById('height');
+        const uploadedImage = document.getElementById('uploaded-image');
+        const verticalLeftLine = document.getElementById('vertical-left');
+        const horizontalTopLine = document.getElementById('horizontal-top');
+        const verticalRightLine = document.getElementById('vertical-right');
+        const horizontalBottomLine = document.getElementById('horizontal-bottom');
+
+        function updateLines() {
+            const left = leftSlider.value;
+            const top = topSlider.value;
+            const widthPercentage = widthSlider.value;
+            const heightPercentage = heightSlider.value;
+
+            const width = (widthPercentage / 100) * uploadedImage.width;
+            const height = (heightPercentage / 100) * uploadedImage.height;
+
+            verticalLeftLine.setAttribute('x1', left);
+            verticalLeftLine.setAttribute('x2', left);
+            verticalLeftLine.setAttribute('y2', uploadedImage.height);
+
+            horizontalTopLine.setAttribute('y1', top);
+            horizontalTopLine.setAttribute('y2', top);
+            horizontalTopLine.setAttribute('x2', uploadedImage.width);
+
+            verticalRightLine.setAttribute('x1', parseInt(left) + parseInt(width));
+            verticalRightLine.setAttribute('x2', parseInt(left) + parseInt(width));
+            verticalRightLine.setAttribute('y2', uploadedImage.height);
+
+            horizontalBottomLine.setAttribute('y1', parseInt(top) + parseInt(height));
+            horizontalBottomLine.setAttribute('y2', parseInt(top) + parseInt(height));
+            horizontalBottomLine.setAttribute('x2', uploadedImage.width);
+        }
+
+        leftSlider.addEventListener('input', updateLines);
+        topSlider.addEventListener('input', updateLines);
+        widthSlider.addEventListener('input', updateLines);
+        heightSlider.addEventListener('input', updateLines);
+
+        // Initial update
+        updateLines();
+
+        var blur1 = document.querySelector('.blur-preview');
+        var crop1 = document.querySelector('.crop-preview');
+        var rotate1 = document.querySelector('.rotate-preview');
+        var get_text1 = document.querySelector('.extract-preview');
+        var filter1 = document.querySelector('.filter-preview');
+
+        // blur option
+        function blurOption() {
+            blur1.style.display = 'block';
+            crop1.style.display = 'none';
+            rotate1.style.display = 'none';
+            get_text1.style.display = 'none';
+            filter1.style.display = 'none';
+        }
+
+        // crop options
+        function cropOption() {
+            blur1.style.display = 'none';
+            crop1.style.display = 'block';
+            rotate1.style.display = 'none';
+            get_text1.style.display = 'none';
+            filter1.style.display = 'none';
+        }
+
+        // rotate options
+        function rotateOption() {
+            blur1.style.display = 'none';
+            crop1.style.display = 'none';
+            rotate1.style.display = 'block';
+            get_text1.style.display = 'none';
+            filter1.style.display = 'none';
+        }
+
+        // text extracting option
+        function getTextOption() {
+            blur1.style.display = 'none';
+            crop1.style.display = 'none';
+            rotate1.style.display = 'none';
+            get_text1.style.display = 'block';
+            filter1.style.display = 'none';
+        }
+
+        // filtering options
+        function filterOption() {
+            blur1.style.display = 'none';
+            crop1.style.display = 'none';
+            rotate1.style.display = 'none';
+            get_text1.style.display = 'none';
+            filter1.style.display = 'block';
+        }
+
+        $(function() {
+        // Make the image draggable
+        $("#uploaded-image").draggable();
+
+        // Make the image resizable
+        $("#uploaded-image").resizable({
+            aspectRatio: true, // Maintain aspect ratio
+            minWidth: 50, // Set minimum width
+            minHeight: 50, // Set minimum height
+            maxHeight: 400, // Set maximum height
+            maxWidth: 400 // Set maximum width
+        });
+
+        // Add mousewheel event to the image
+        $("#uploaded-image").on('mousewheel', function(event) {
+            event.preventDefault();
+            var deltaY = event.originalEvent.deltaY;
+            var zoomScale = 0.1; // Change this value to adjust zoom speed
+            var currentWidth = $(this).width();
+            var newWidth = currentWidth + (deltaY * zoomScale);
+
+            // Ensure the image doesn't exceed maximum or minimum size
+            if (newWidth >= 50 && newWidth <= 400) {
+                $(this).width(newWidth);
+                $(this).height('auto');
+            }
+        });
+    });
+
+    // Function to draw the image on the canvas
+    function drawImageOnCanvas() {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const image = document.getElementById('uploaded-image');
+        
+        // Set canvas dimensions to match image dimensions
+        canvas.width = image.width;
+        canvas.height = image.height;
+        
+        // Draw the image on the canvas
+        ctx.drawImage(image, 0, 0);
+        
+        return canvas.toDataURL('image/png');
+    }
+    
+    // Function to trigger download of the canvas image
+    function downloadImage() {
+        const dataUrl = drawImageOnCanvas();
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    </script>
+
+</body>
+</html>
+
