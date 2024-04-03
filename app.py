@@ -5,16 +5,12 @@ from io import BytesIO
 import base64
 from IPython.display import display
 from PIL import Image, ImageFilter, ImageOps
-import pytesseract
 from skimage import io, transform, metrics
 import os
 
 app = Flask(__name__)
 
 uploaded_files = {}
-
-# Set the path to the Tesseract executable  # have to change this when rendering the application
-pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 def apply_filter(input_image_path, filter_name):
     """
@@ -51,29 +47,7 @@ def rotate_image(img_path,degree):
 
     image1=Image.open(img_path)
     rotated_image=image1.rotate(degree)
-    return rotated_image
-
-# def extract_text(image_path):
-#     # Path to the image have to be changed 
-#     #image_path = "text_img.png"
-#     img = Image.open(image_path)
-#     extracted_text = pytesseract.image_to_string(img)
-#     return extract_text
-
-# def calculate_ssim(image1_path, image2_path):
-#     # Load images
-#     image1 = io.imread(image1_path, as_gray=True)
-#     image2 = io.imread(image2_path, as_gray=True)
-    
-#     # Resize images to the same dimensions
-#     min_height = min(image1.shape[0], image2.shape[0])
-#     min_width = min(image1.shape[1], image2.shape[1])
-#     image1 = transform.resize(image1, (min_height, min_width))
-#     image2 = transform.resize(image2, (min_height, min_width))
-    
-#     # Calculate SSIM
-#     ssim = metrics.structural_similarity(image1, image2, data_range=image2.max() - image2.min())
-#     return str(int(ssim*100))+"%" 
+    return rotated_image 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -182,27 +156,6 @@ def apply_filter_in_memory(filename, filter_option):
     buffered = BytesIO()
     filtered_image.save(buffered, format="PNG")
     uploaded_files[filename] = buffered.getvalue()
-
-
- 
-# @app.route('/extract', methods=['POST'])
-# def extract_text():
-#     img=img_list[-1]
-
-#     # Open the uploaded image
-#     image = Image.open(img)
-
-#     # Perform OCR to extract text from the image
-#     extracted_text = pytesseract.image_to_string(image)
-
-#     # Convert original image to base64 format
-#     img1=img_list[-2]
-#     img_io=BytesIO()
-#     img1.save(img_io,format='JPEG')
-#     img_io.seek(0)
-#     img1 =base64.b64encode(img_io.getvalue()).decode('utf-8')
-
-#     return render_template('dashboard.html', extract_text=extract_text,img1=img1)
 
 
 if __name__ == '__main__':
