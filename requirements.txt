@@ -4,3 +4,4 @@ numpy
 ipython
 Pillow
 scikit-image
+gunicorn
